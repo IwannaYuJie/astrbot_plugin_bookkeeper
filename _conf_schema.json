@@ -27,7 +27,7 @@
     "type": "string",
     "description": "Currency label",
     "hint": "Used in bill summary output.",
-    "default": "CNY"
+    "default": "元"
   },
   "max_records": {
     "type": "int",

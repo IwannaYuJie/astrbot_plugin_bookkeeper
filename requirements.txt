@@ -1,0 +1,3 @@
+# astrbot_plugin_bookkeeper
+# 本插件仅使用 Python 标准库，无额外第三方依赖。
+# 此文件按照 AstrBot 插件开发规范创建，确保用户安装时不会出现依赖问题。
