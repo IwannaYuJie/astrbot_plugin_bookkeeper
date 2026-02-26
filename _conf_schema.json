@@ -1,0 +1,80 @@
+{
+  "auto_extract_enabled": {
+    "type": "bool",
+    "description": "Enable AI auto bookkeeping",
+    "hint": "When enabled, the plugin guides LLM to call the bookkeeping tool automatically.",
+    "default": true
+  },
+  "whitelist_enabled": {
+    "type": "bool",
+    "description": "Enable whitelist",
+    "hint": "When enabled, only users in whitelist_user_ids can use auto bookkeeping and query commands.",
+    "default": false
+  },
+  "whitelist_admin_bypass": {
+    "type": "bool",
+    "description": "Allow admin bypass",
+    "hint": "Admins are allowed even if whitelist is enabled.",
+    "default": true
+  },
+  "whitelist_user_ids": {
+    "type": "list",
+    "description": "Whitelist user IDs",
+    "hint": "A list of sender IDs allowed to use this plugin.",
+    "default": []
+  },
+  "currency_symbol": {
+    "type": "string",
+    "description": "Currency label",
+    "hint": "Used in bill summary output.",
+    "default": "CNY"
+  },
+  "max_records": {
+    "type": "int",
+    "description": "Max stored records",
+    "hint": "Old records are dropped when this limit is exceeded.",
+    "default": 5000
+  },
+  "max_report_items": {
+    "type": "int",
+    "description": "Max items per report",
+    "hint": "Limit the number of lines shown in daily/monthly bill output.",
+    "default": 100
+  },
+  "daily_report_enabled": {
+    "type": "bool",
+    "description": "Enable daily bill schedule",
+    "hint": "Send daily bill automatically at daily_report_time.",
+    "default": false
+  },
+  "daily_report_time": {
+    "type": "string",
+    "description": "Daily bill time",
+    "hint": "Format: HH:MM",
+    "default": "21:30"
+  },
+  "monthly_report_enabled": {
+    "type": "bool",
+    "description": "Enable monthly bill schedule",
+    "hint": "Send monthly bill automatically at monthly_report_day monthly_report_time.",
+    "default": false
+  },
+  "monthly_report_day": {
+    "type": "int",
+    "description": "Monthly bill day",
+    "hint": "Range: 1-31",
+    "default": 1
+  },
+  "monthly_report_time": {
+    "type": "string",
+    "description": "Monthly bill time",
+    "hint": "Format: HH:MM",
+    "default": "21:30"
+  },
+  "schedule_timezone": {
+    "type": "string",
+    "description": "Schedule timezone",
+    "hint": "IANA timezone, for example Asia/Shanghai. Empty means system timezone.",
+    "default": ""
+  }
+}

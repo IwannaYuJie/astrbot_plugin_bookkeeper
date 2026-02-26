@@ -1,0 +1,4 @@
+name: astrbot_plugin_bookkeeper
+desc: AI-assisted bookkeeping plugin with whitelist, scheduled reports, and manual queries.
+author: local-user
+version: 0.1.0
