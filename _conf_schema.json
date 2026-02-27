@@ -1,80 +1,80 @@
 {
   "auto_extract_enabled": {
     "type": "bool",
-    "description": "Enable AI auto bookkeeping",
-    "hint": "When enabled, the plugin guides LLM to call the bookkeeping tool automatically.",
+    "description": "启用 AI 自动记账",
+    "hint": "开启后，插件会引导大语言模型自动调用记账工具。",
     "default": true
   },
   "whitelist_enabled": {
     "type": "bool",
-    "description": "Enable whitelist",
-    "hint": "When enabled, only users in whitelist_user_ids can use auto bookkeeping and query commands.",
+    "description": "启用白名单",
+    "hint": "开启后，只有白名单中的用户才能使用自动记账和查询命令。",
     "default": false
   },
   "whitelist_admin_bypass": {
     "type": "bool",
-    "description": "Allow admin bypass",
-    "hint": "Admins are allowed even if whitelist is enabled.",
+    "description": "管理员免白名单",
+    "hint": "开启后，管理员即使不在白名单中也可以使用本插件。",
     "default": true
   },
   "whitelist_user_ids": {
     "type": "list",
-    "description": "Whitelist user IDs",
-    "hint": "A list of sender IDs allowed to use this plugin.",
+    "description": "白名单用户 ID",
+    "hint": "允许使用本插件的用户 ID 列表。",
     "default": []
   },
   "currency_symbol": {
     "type": "string",
-    "description": "Currency label",
-    "hint": "Used in bill summary output.",
+    "description": "货币符号",
+    "hint": "用于账单汇总输出中的货币单位。",
     "default": "元"
   },
   "max_records": {
     "type": "int",
-    "description": "Max stored records",
-    "hint": "Old records are dropped when this limit is exceeded.",
+    "description": "最大存储记录数",
+    "hint": "超出此限制后，旧记录将被自动删除。",
     "default": 5000
   },
   "max_report_items": {
     "type": "int",
-    "description": "Max items per report",
-    "hint": "Limit the number of lines shown in daily/monthly bill output.",
+    "description": "每份报表最大条目数",
+    "hint": "限制日账单/月账单输出中显示的行数。",
     "default": 100
   },
   "daily_report_enabled": {
     "type": "bool",
-    "description": "Enable daily bill schedule",
-    "hint": "Send daily bill automatically at daily_report_time.",
+    "description": "启用每日账单定时推送",
+    "hint": "开启后，将在每天的指定时间自动发送日账单。",
     "default": false
   },
   "daily_report_time": {
     "type": "string",
-    "description": "Daily bill time",
-    "hint": "Format: HH:MM",
+    "description": "每日账单推送时间",
+    "hint": "格式：HH:MM",
     "default": "21:30"
   },
   "monthly_report_enabled": {
     "type": "bool",
-    "description": "Enable monthly bill schedule",
-    "hint": "Send monthly bill automatically at monthly_report_day monthly_report_time.",
+    "description": "启用每月账单定时推送",
+    "hint": "开启后，将在每月的指定日期和时间自动发送月账单。",
     "default": false
   },
   "monthly_report_day": {
     "type": "int",
-    "description": "Monthly bill day",
-    "hint": "Range: 1-31",
+    "description": "每月账单推送日期",
+    "hint": "范围：1-31",
     "default": 1
   },
   "monthly_report_time": {
     "type": "string",
-    "description": "Monthly bill time",
-    "hint": "Format: HH:MM",
+    "description": "每月账单推送时间",
+    "hint": "格式：HH:MM",
     "default": "21:30"
   },
   "schedule_timezone": {
     "type": "string",
-    "description": "Schedule timezone",
-    "hint": "IANA timezone, for example Asia/Shanghai. Empty means system timezone.",
+    "description": "定时任务时区",
+    "hint": "IANA 时区格式，例如 Asia/Shanghai。留空则使用系统时区。",
     "default": ""
   }
 }
