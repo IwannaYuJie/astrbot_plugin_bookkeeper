@@ -2,6 +2,6 @@ name: astrbot_plugin_bookkeeper
 desc: AI 智能记账插件，支持自动记账、白名单管理、定时账单推送与手动查询。
 display_name: AI 记账助手
 author: local-user
-repo: ""
+repo: "https://github.com/IwannaYuJie/astrbot_plugin_bookkeeper"
 version: 0.1.0
 astrbot_version: ">=4.9.2"
