@@ -4,6 +4,7 @@ import asyncio
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from typing import Any
+from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from astrbot.api import AstrBotConfig, logger, star
@@ -22,7 +23,7 @@ class Main(star.Star):
         self, context: star.Context, config: AstrBotConfig | None = None
     ) -> None:
         super().__init__(context, config=config)
-        self.config = config or {}
+        self.config = config if config is not None else {}
         self._records_lock = asyncio.Lock()
         self._cron_lock = asyncio.Lock()
 
@@ -316,6 +317,7 @@ class Main(star.Star):
     @whitelist.command("add")
     async def wl_add(self, event: AstrMessageEvent, user_id: str = "") -> None:
         """添加用户到白名单。"""
+        user_id = (user_id or "").strip()
         if not user_id:
             yield event.plain_result("用法：book wl add <用户ID>")
             return
@@ -332,6 +334,7 @@ class Main(star.Star):
     @whitelist.command("del")
     async def wl_del(self, event: AstrMessageEvent, user_id: str = "") -> None:
         """从白名单移除用户。"""
+        user_id = (user_id or "").strip()
         if not user_id:
             yield event.plain_result("用法：book wl del <用户ID>")
             return
@@ -497,6 +500,7 @@ class Main(star.Star):
         now = datetime.now(tz=self._effective_tz())
         today = now.date().isoformat()
         record = {
+            "record_id": str(uuid4()),
             "session": session,
             "sender_id": sender_id,
             "sender_name": sender_name,
@@ -575,6 +579,7 @@ class Main(star.Star):
 
     async def _delete_record(self, target: dict[str, Any]) -> bool:
         """从全局记录中删除指定的记录（通过 timestamp 精确匹配）。"""
+        target_record_id = str(target.get("record_id") or "").strip()
         target_ts = target.get("timestamp", "")
         target_session = target.get("session", "")
         target_item = target.get("item", "")
@@ -582,18 +587,30 @@ class Main(star.Star):
 
         async with self._records_lock:
             records = await self._load_records_unlocked()
-            original_len = len(records)
-            # 通过 timestamp + session + item + amount 精确定位记录
-            records = [
-                r for r in records
-                if not (
-                    r.get("timestamp") == target_ts
-                    and r.get("session") == target_session
-                    and r.get("item") == target_item
-                    and self._safe_float(r.get("amount")) == target_amount
-                )
-            ]
-            if len(records) == original_len:
+            deleted = False
+
+            # Preferred path: unique id ensures one-by-one deletion.
+            if target_record_id:
+                for idx, record in enumerate(records):
+                    if str(record.get("record_id") or "").strip() == target_record_id:
+                        del records[idx]
+                        deleted = True
+                        break
+
+            # Backward compatibility: old records may not have record_id.
+            if not deleted:
+                for idx, record in enumerate(records):
+                    if (
+                        record.get("timestamp") == target_ts
+                        and record.get("session") == target_session
+                        and record.get("item") == target_item
+                        and self._safe_float(record.get("amount")) == target_amount
+                    ):
+                        del records[idx]
+                        deleted = True
+                        break
+
+            if not deleted:
                 return False
             await self.put_kv_data(self.RECORDS_KEY, records)
         return True
@@ -649,7 +666,7 @@ class Main(star.Star):
         max_items = max(self._cfg_int("max_report_items", 100), 1)
         currency = self._cfg_str("currency_symbol", "元")
         lines = [title, f"统计区间：{period}", ""]
-        total = 0.0
+        total = sum(self._safe_float(record.get("amount")) for record in records)
 
         for idx, record in enumerate(records[:max_items], start=1):
             amount = self._safe_float(record.get("amount"))
@@ -659,7 +676,6 @@ class Main(star.Star):
                 lines.append(f"{idx}. {item} - {amount:.2f} ({sender_name})")
             else:
                 lines.append(f"{idx}. {item} - {amount:.2f}")
-            total += amount
 
         if len(records) > max_items:
             lines.append(f"... 另有 {len(records) - max_items} 条记录未显示")
@@ -788,7 +804,12 @@ class Main(star.Star):
             text = self._render_bill(
                 "🔔 每日账单推送", target.isoformat(), session_records
             )
-            await self.context.send_message(session, MessageChain([Plain(text)]))
+            try:
+                await self.context.send_message(session, MessageChain([Plain(text)]))
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    f"bookkeeper: daily report send failed for session={session}: {exc}"
+                )
 
     async def _cron_monthly_bill(self) -> None:
         today = self._today_local()
@@ -810,7 +831,12 @@ class Main(star.Star):
             text = self._render_bill(
                 "🔔 每月账单推送", period, session_records
             )
-            await self.context.send_message(session, MessageChain([Plain(text)]))
+            try:
+                await self.context.send_message(session, MessageChain([Plain(text)]))
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    f"bookkeeper: monthly report send failed for session={session}: {exc}"
+                )
 
     def _build_daily_cron_expression(self, report_time: str) -> str | None:
         hm = self._parse_hhmm(report_time)
