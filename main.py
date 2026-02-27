@@ -92,7 +92,7 @@ class Main(star.Star):
         except ValueError as exc:
             return f"Bookkeeping skipped: invalid amount ({exc})."
 
-        message_id = str(getattr(event.message_obj, "message_id", "") or "")
+        message_id = getattr(event.message_obj, "message_id", "")
         ok, reason = await self._append_record(
             session=session,
             sender_id=sender_id,
